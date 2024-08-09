@@ -18,6 +18,7 @@ with open('output.csv', 'r') as infile, open('formatted.csv', 'w', newline='') a
         
         try:
             dt = datetime.strptime(timestamp, "%b %d, %Y %H:%M:%S.%f")
+            
             formatted_time = dt.strftime("%H:%M:%S.%f")[:-3] 
         except ValueError:
             formatted_time = timestamp

@@ -54,7 +54,7 @@ echo -e "${RED}              \n\n
                                   .++.                                  
                                   .++.                                   
                                   .++.              
-
+                                  
                          __     _     ___             
                       /\ \ \___| |_  / _ \___ _ __    
                      /  \/ / _ \ __|/ /_)/ _ \ '_ \   
@@ -172,14 +172,30 @@ while true; do
                     case $opt in
                         Y|y)
                             if [ -z "$filter" ]; then
-                                timeout 20 sudo tcpdump -c 50 -i en0 -w "$(date +'%Y%m%d_%H%M%S').pcap" | tee -a "$LOGFILE"
+                                dummy="$(date +'%Y%m%d_%H%M%S').pcap"
+
+                                timeout 20 sudo tcpdump -c 50 -i en0 -w "$dummy" | tee -a "$LOGFILE"
+
+                                tshark -r "$dummy" -T fields -E header=y -E separator=, -E quote=d -e frame.number -e frame.time -e ip.src -e ip.dst -e tcp.port -e udp.port -e frame.len > output.csv
+
+                                python3 format.py
+                                python3 pcap-csv.py
+
                             else
-                                timeout 20 sudo tcpdump -c 50 -i en0 "$filter" -w "$(date +'%Y%m%d_%H%M%S').pcap" | tee -a "$LOGFILE"
+                                dummy="$(date +'%Y%m%d_%H%M%S').pcap"
+
+                                timeout 20 sudo tcpdump -c 50 -i en0 -w "$dummy" | tee -a "$LOGFILE"
+
+                                tshark -r "$dummy" -T fields -E header=y -E separator=, -E quote=d -e frame.number -e frame.time -e ip.src -e ip.dst -e tcp.port -e udp.port -e frame.len > output.csv
+                                python3 format.py
+                                python3 pcap-csv.py
                             fi
+
                             ;;
                         N|n)
                             if [ -z "$filter" ]; then
                                 timeout 20 sudo tcpdump -c 50 -i en0 | tee -a "$LOGFILE"
+                                
                             else
                                 timeout 20 sudo tcpdump -c 50 -i en0 "$filter" | tee -a "$LOGFILE"
                             fi

@@ -86,6 +86,8 @@ while true; do
     echo -e "\033[32m4. TCPDump toolkit\033[0m"
     echo -e "\033[32m5. Clear\033[0m"
     echo -e "\033[32m6. -------------\033[0m"
+    echo -e "\033[32m7. Port Analyzer\033[0m"
+
     echo -e "\033[32m10. Exit\033[0m"
 
     read -p "Choose - " option
@@ -180,6 +182,7 @@ while true; do
 
                                 python3 format.py
                                 python3 pcap-csv.py
+                                rm formatted.csv output.csv
 
                             else
                                 dummy="$(date +'%Y%m%d_%H%M%S').pcap"
@@ -244,6 +247,14 @@ while true; do
                 *)
                     ;;
             esac
+            ;;
+        7)
+            echo "Executing prockiller script..."  
+            if [ -x "./prockiller.sh" ]; then
+                ./prockiller.sh
+            else
+                echo "Error: prockiller is not executable or not found."
+            fi
             ;;
         10)
             echo "Exiting..."

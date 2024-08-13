@@ -11,11 +11,28 @@ done
 
 # Define log file and create them in case they don't exist
 LOGFILE="tkl.log"
-touch $LOGFILE $REPORT
+ACT_LOG="activity.log"
 
-# Fetcehs IP address from ifconfig.
+touch $LOGFILE $ACT_LOG
+
+# Fetches IP address from ifconfig.
 get_ip_address() {
     ifconfig | awk '/^[a-zA-Z0-9]/ { iface=$1 } $1 == "inet" && $2 !~ /^127/ { print iface ": " $2 }'
+}
+
+
+# Visuals
+RED='\033[0;31m'
+NC='\033[0m'
+GREEN='\033[0;32m'
+
+
+
+function sig_handler {
+    echo -e "\nNow exiting, thank you for using"
+    echo -e "$(whoami) had a succesful logoff on $(date '+%Y-%m-%d %H:%M:%S')" >> activity.log
+
+    exit
 }
 
 inet=$(get_ip_address)
@@ -34,10 +51,6 @@ check_sudo() {
 }
 check_sudo
 
-
-# Visuals
-RED='\033[0;31m'
-NC='\033[0m'
 
 echo -e "${RED}              \n\n
 
@@ -63,7 +76,9 @@ echo -e "${RED}              \n\n
 
 ${NC}"                 
 
+trap sig_handler SIGINT
 
+echo -e "$(whoami) had a successful login on $(date '+%Y-%m-%d %H:%M:%S') " >> activity.log
 
 echo -e "\n\033[34mSystem Information\033[0m"
 echo -e "\033[34mOperating System:\033[0m $(uname -s)"
@@ -188,7 +203,6 @@ while true; do
                                 dummy="$(date +'%Y%m%d_%H%M%S').pcap"
 
                                 timeout 20 sudo tcpdump -c 50 -i en0 -w "$dummy" | tee -a "$LOGFILE"
-
                                 tshark -r "$dummy" -T fields -E header=y -E separator=, -E quote=d -e frame.number -e frame.time -e ip.src -e ip.dst -e tcp.port -e udp.port -e frame.len > output.csv
                                 python3 format.py
                                 python3 pcap-csv.py
@@ -256,9 +270,18 @@ while true; do
                 echo "Error: prockiller is not executable or not found."
             fi
             ;;
+        
         10)
             echo "Exiting..."
             exit 0
+            ;;
+        clear)
+            clear
+            ;;
+        q)
+            echo -e "$(whoami) had a succesful logoff on $(date '+%Y-%m-%d %H:%M:%S') " >> activity.log
+
+            exit
             ;;
         *)
             echo "Invalid option"

@@ -20,7 +20,6 @@ get_ip_address() {
     ifconfig | awk '/^[a-zA-Z0-9]/ { iface=$1 } $1 == "inet" && $2 !~ /^127/ { print iface ": " $2 }'
 }
 
-
 # Visuals
 RED='\033[0;31m'
 NC='\033[0m'
@@ -30,9 +29,8 @@ GREEN='\033[0;32m'
 
 function sig_handler {
     echo -e "\nNow exiting, thank you for using"
-    echo -e "$(whoami) had a succesful logoff on $(date '+%Y-%m-%d %H:%M:%S')" >> activity.log
-
-    exit
+    echo -e "$(whoami) had a succesful logoff on $(date '+%Y-%m-%d %H:%M:%S')" >> activity.log  
+    exit;
 }
 
 inet=$(get_ip_address)
@@ -102,9 +100,7 @@ while true; do
     echo -e "\033[32m5. Clear\033[0m"
     echo -e "\033[32m6. -------------\033[0m"
     echo -e "\033[32m7. Port Analyzer\033[0m"
-
     echo -e "\033[32m10. Exit\033[0m"
-
     read -p "Choose - " option
 
     case $option in 
@@ -251,12 +247,17 @@ while true; do
             echo -e "\033[32m\t\tNMAP TOOLKIT\033[0m"
             echo -e "\033[32m\t\t------------\033[0m"
             echo -e "\033[32m\t\t1.) Run port scan on fixed ports\033[0m"
+            echo -e "\033[32m\t\t2.) Run OS scan on network\033[0m"
             read -p "Choose Selection: " nmapvar
 
             case $nmapvar in
                 1)
                     log "Running Port Scan on 1-1024" 
                     nmap -p1-1024 -v --open 127.0.0.1 | tee -a $LOGFILE
+                    ;;
+                2)
+                    chmod +x networkportscan.sh
+                    sudo ./networkportscan.sh
                     ;;
                 *)
                     ;;
@@ -282,6 +283,107 @@ while true; do
             echo -e "$(whoami) had a succesful logoff on $(date '+%Y-%m-%d %H:%M:%S') " >> activity.log
 
             exit
+            ;;
+       
+        help)
+            echo -e "\n\n\033[1;34mToolkit Help - Detailed Guide\033[0m"
+            echo -e "\033[1;34m====================================================================\033[0m"
+            echo -e "\033[1;34mDescription:\033[0m"
+            echo -e "\033[1;32mThis toolkit provides a streamlined interface for executing complex\033[0m"
+            echo -e "\033[1;32mnetwork troubleshooting commands. It's designed to simplify tasks\033[0m"
+            echo -e "\033[1;32msuch as IP management, DNS lookups, packet analysis, and port scanning,\033[0m"
+            echo -e "\033[1;32mby offering a menu-driven approach. Each tool within the toolkit\033[0m"
+            echo -e "\033[1;32mis tailored for specific networking needs, ensuring efficiency\033[0m"
+            echo -e "\033[1;32mand precision in your daily network management tasks.\033[0m"
+            echo -e "\033[1;34m====================================================================\033[0m"
+
+            echo -e "\033[1;34mFeatures:\033[0m"
+            echo -e "\033[1;33m1. IP Flush:\033[0m"
+            echo -e "\033[1;37m   - Description: Disables and re-enables your network interface,\033[0m"
+            echo -e "\033[1;37m     effectively refreshing your IP address.\033[0m"
+            echo -e "\033[1;37m   - Use Case: Helpful when you need to obtain a new IP address\033[0m"
+            echo -e "\033[1;37m     without rebooting your system or router.\033[0m"
+            
+            echo -e "\033[1;33m2. DNS Lookup:\033[0m"
+            echo -e "\033[1;37m   - Description: Performs a DNS lookup for a specified domain,\033[0m"
+            echo -e "\033[1;37m     returning its IP address and other DNS records.\033[0m"
+            echo -e "\033[1;37m   - Use Case: Useful for verifying domain resolution or troubleshooting\033[0m"
+            echo -e "\033[1;37m     DNS-related issues.\033[0m"
+            
+            echo -e "\033[1;33m3. Ping Test:\033[0m"
+            echo -e "\033[1;37m   - Description: Tests the connectivity to a specific IP address\033[0m"
+            echo -e "\033[1;37m     by sending ICMP echo requests (pings).\033[0m"
+            echo -e "\033[1;37m   - Use Case: Helps determine whether a host is reachable and\033[0m"
+            echo -e "\033[1;37m     measures the round-trip time of the packets.\033[0m"
+            
+            echo -e "\033[1;33m4. TCPDump Toolkit:\033[0m"
+            echo -e "\033[1;37m   - Description: A suite of tools for capturing and analyzing\033[0m"
+            echo -e "\033[1;37m     network traffic using tcpdump.\033[0m"
+            echo -e "\033[1;37m   - Options:\033[0m"
+            echo -e "\033[1;37m     a. Available NIC's: Lists all available network interfaces.\033[0m"
+            echo -e "\033[1;37m     b. Run 50 Packet Dump: Captures 50 packets based on a specified\033[0m"
+            echo -e "\033[1;37m        protocol or all traffic. Option to save packets in pcap format.\033[0m"
+            echo -e "\033[1;37m     c. Packets from Source: Filters and captures packets originating\033[0m"
+            echo -e "\033[1;37m        from a specified source IP.\033[0m"
+            echo -e "\033[1;37m     d. Packets from Dest: Filters and captures packets destined\033[0m"
+            echo -e "\033[1;37m        for a specified destination IP.\033[0m"
+            
+            echo -e "\033[1;33m5. Clear:\033[0m"
+            echo -e "\033[1;37m   - Description: Clears the terminal screen to remove clutter.\033[0m"
+            echo -e "\033[1;37m   - Use Case: Useful for maintaining a clean workspace, especially\033[0m"
+            echo -e "\033[1;37m     during extended troubleshooting sessions.\033[0m"
+            
+            echo -e "\033[1;33m6. NMAP Toolkit:\033[0m"
+            echo -e "\033[1;37m   - Description: Provides a set of tools for scanning and analyzing\033[0m"
+            echo -e "\033[1;37m     open ports on a network using Nmap.\033[0m"
+            echo -e "\033[1;37m   - Options:\033[0m"
+            echo -e "\033[1;37m     a. Run port scan on fixed ports: Scans ports 1-1024 on the local\033[0m"
+            echo -e "\033[1;37m        machine to identify open services and potential vulnerabilities.\033[0m"
+
+            echo -e "\033[1;33m7. Port Analyzer:\033[0m"
+            echo -e "\033[1;37m   - Description: Executes a script to analyze processes associated\033[0m"
+            echo -e "\033[1;37m     with specific ports and provides an option to terminate them.\033[0m"
+            echo -e "\033[1;37m   - Use Case: Essential for identifying and managing services that\033[0m"
+            echo -e "\033[1;37m     are occupying important ports, especially during conflict resolution.\033[0m"
+
+            echo -e "\033[1;34m====================================================================\033[0m"
+            echo -e "\033[1;34mUsage Instructions:\033[0m"
+            echo -e "\033[1;32m1. Select an Option:\033[0m"
+            echo -e "\033[1;37m   - At the menu prompt, enter the number corresponding to the tool\033[0m"
+            echo -e "\033[1;37m     you wish to use. For example, to perform a DNS lookup, you would\033[0m"
+            echo -e "\033[1;37m     type '2' and press Enter.\033[0m"
+            
+            echo -e "\033[1;32m2. Follow the Prompts:\033[0m"
+            echo -e "\033[1;37m   - After selecting a tool, you may be asked to provide additional\033[0m"
+            echo -e "\033[1;37m     information, such as a domain name or IP address. Follow the prompts\033[0m"
+            echo -e "\033[1;37m     to enter the required details.\033[0m"
+            
+            echo -e "\033[1;32m3. Review the Output:\033[0m"
+            echo -e "\033[1;37m   - The toolkit will display the results of your chosen command\033[0m"
+            echo -e "\033[1;37m     directly in the terminal. The output will also be logged to the\033[0m"
+            echo -e "\033[1;37m     specified log file for later review.\033[0m"
+            
+            echo -e "\033[1;34m====================================================================\033[0m"
+            echo -e "\033[1;34mAdditional Commands:\033[0m"
+            echo -e "\033[1;32m- clear:\033[0m"
+            echo -e "\033[1;37m   - Clears the terminal screen.\033[0m"
+            echo -e "\033[1;32m- q:\033[0m"
+            echo -e "\033[1;37m   - Quits the toolkit and logs off the user.\033[0m"
+            echo -e "\033[1;32m- help:\033[0m"
+            echo -e "\033[1;37m   - Displays this detailed help information.\033[0m"
+            echo -e "\033[1;34m====================================================================\033[0m"
+            echo -e "\033[1;34mConclusion:\033[0m"
+            echo -e "\033[1;32mThis toolkit is designed to make your network troubleshooting more\033[0m"
+            echo -e "\033[1;32mefficient by encapsulating complex commands into a simple interface.\033[0m"
+            echo -e "\033[1;32mWith features that cover a wide range of network management tasks,\033[0m"
+            echo -e "\033[1;32mthis toolkit is your go-to tool for maintaining a secure and stable\033"
+            echo -e "\033[1;32mnetwork environment. We hope you find it valuable for your daily\033[0m"
+            echo -e "\033[1;32mtasks and troubleshooting needs. If you encounter any issues or have\033[0m"
+            echo -e "\033[1;32msuggestions for improvements, please don't hesitate to reach out.\033[0m"
+            echo -e "\033[1;34m====================================================================\033[0m"
+            echo -e "\033[1;34mThank you for using the Toolkit!\033[0m"
+            echo -e "\033[1;34m====================================================================\033[0m"
+            
             ;;
         *)
             echo "Invalid option"

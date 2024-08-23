@@ -30,6 +30,7 @@ GREEN='\033[0;32m'
 function sig_handler {
     echo -e "\nNow exiting, thank you for using"
     echo -e "$(whoami) had a succesful logoff on $(date '+%Y-%m-%d %H:%M:%S')" >> activity.log  
+    
     exit;
 }
 
@@ -98,7 +99,7 @@ while true; do
     echo -e "\033[32m3. Ping Test\033[0m"
     echo -e "\033[32m4. TCPDump toolkit\033[0m"
     echo -e "\033[32m5. Clear\033[0m"
-    echo -e "\033[32m6. -------------\033[0m"
+    echo -e "\033[32m6. Nmap Toolkit\033[0m"
     echo -e "\033[32m7. Port Analyzer\033[0m"
     echo -e "\033[32m10. Exit\033[0m"
     read -p "Choose - " option
@@ -248,6 +249,9 @@ while true; do
             echo -e "\033[32m\t\t------------\033[0m"
             echo -e "\033[32m\t\t1.) Run port scan on fixed ports\033[0m"
             echo -e "\033[32m\t\t2.) Run OS scan on network\033[0m"
+            echo -e "\033[32m\t\t2.) Vulnerable Ports\033[0m"
+
+
             read -p "Choose Selection: " nmapvar
 
             case $nmapvar in
@@ -256,8 +260,11 @@ while true; do
                     nmap -p1-1024 -v --open 127.0.0.1 | tee -a $LOGFILE
                     ;;
                 2)
-                    chmod +x networkportscan.sh
-                    sudo ./networkportscan.sh
+                    chmod +x portscan.sh
+                    sudo ./portscan.sh
+                    ;;
+                3)
+                    python3 vul_port.py
                     ;;
                 *)
                     ;;
